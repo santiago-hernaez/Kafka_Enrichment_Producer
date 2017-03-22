@@ -1,0 +1,24 @@
+input {
+  kafka {
+    bootstrap_servers => "localhost:9092"
+    topics => ["Zara","PullBear","MassimoDutti","Bershka","Oysho","Stradivarius","Lefties","Uterque"]
+   
+  }
+}
+filter 
+{
+    mutate
+    {
+        replace => [ "message", "%{message}" ]
+        gsub => [ 'message','\n','']
+    }
+    if [message] =~ /^{.*}$/
+    {
+        json { source => message }
+    }
+
+}
+
+output {
+  elasticsearch { hosts => ["localhost:9200"] }
+}
